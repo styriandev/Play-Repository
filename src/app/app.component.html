@@ -1,6 +1,16 @@
-<button (click)="previous()" [disabled]="!(hasPrevious$ | async)">Previous</button>
-<button (click)="next()" [disabled]="!(hasNext$ | async)">Next</button>
+<!--<button (click)="previous()" [disabled]="!(hasPrevious$ | async)">Previous</button>-->
+<!--<button (click)="next()" [disabled]="!(hasNext$ | async)">Next</button>-->
 
-<div *ngIf="recipe$ | async as recipe">
+<!--<div *ngIf="recipe$ | async as recipe">-->
+<!--  {{ recipe.name}}-->
+<!--</div>-->
+
+
+The standard way
+<div *ngFor="let recipe of standardWayOfRecipes$ | async">
+  {{ recipe.name}}
+</div>
+
+<div *ngFor="let recipe of standardWayOfRecipes$ | async">
   {{ recipe.name}}
 </div>

@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {RxState, selectSlice} from '@rx-angular/state';
 import {Recipe, StateRepository} from './state-repository';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import { Observable, ReplaySubject } from 'rxjs';
+import { map, share, shareReplay, takeUntil } from 'rxjs/operators';
 
 interface State {
   index: number;
@@ -15,16 +15,31 @@ interface State {
   styleUrls: ['./app.component.scss'],
   providers: [ RxState ]
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   title = 'my-advent';
   recipeIndex$: Observable<number>;
   recipes$: Observable<Recipe[]>;
   recipe$: Observable<Recipe>;
   hasPrevious$: Observable<boolean>;
   hasNext$: Observable<boolean>;
+  standardWayOfRecipes$: Observable<Recipe[]>;
+
+  private destroyed$: ReplaySubject<void> = new ReplaySubject<void>(1);
 
   constructor(private _state: RxState<State>,
               private stateRepository: StateRepository) {
+    this.standardWayOfRecipes$ = this.stateRepository.recipes.pipe(
+      map((recipe) => {
+        console.log('Computing...');
+        return recipe;
+      }),
+      shareReplay({
+        bufferSize: 1,
+        refCount: true
+      }),
+      takeUntil(this.destroyed$)
+    );
+
     this._state.set({ index: 0 });
     this.recipeIndex$ = this._state.select('index');
     this.recipes$ = this._state.select('recipes');
@@ -50,5 +65,9 @@ export class AppComponent {
 
   previous(): void {
     this._state.set('index', ({index}) => index - 1);
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
   }
 }
