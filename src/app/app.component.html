@@ -1,7 +1,6 @@
 <button (click)="previous()" [disabled]="!(hasPrevious$ | async)">Previous</button>
 <button (click)="next()" [disabled]="!(hasNext$ | async)">Next</button>
 
-
 <div *ngIf="recipe$ | async as recipe">
   {{ recipe.name}}
 </div>
